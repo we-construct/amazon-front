@@ -2,7 +2,10 @@ import React, {useState}  from "react";
 import axios from 'axios';
 import styled, { css } from 'styled-components'
 import {Link, useHistory} from 'react-router-dom';
-import AuthService from "../services/auth-service"
+import AuthService from "../../services/auth-service"
+import {useDispatch, useSelector} from "react-redux";
+import {loginRequest} from "../../store/auth/action";
+import auth from "../../store/auth/reducer";
 
 const Header = styled.h3 ``
 const Container = styled.div`
@@ -24,18 +27,18 @@ const InputsContainer = styled.div `
         gap: 15px
         `
 const Login = () => {
+    const dispatch = useDispatch()
+    //get data from store => useSelector
+    const { userData, isLoginSuccess, isLoginFailure } = useSelector((state) => state.auth)
+    console.log('userData', userData)
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     let history = useHistory();
     const handleSubmit = (e) => {
-        AuthService.login({
-            email: email,
-            password: password
-        })
-            .then((res) => {
-                history.push('/register')
-            })
+        dispatch(loginRequest({email: email,
+            password: password}))
+        history.push('/my-page')
     }
     return (
         <Container>

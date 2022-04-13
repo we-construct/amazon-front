@@ -2,7 +2,7 @@ import React, {useState}  from "react";
 import styled  from 'styled-components'
 import {Link, useHistory} from 'react-router-dom';
 
-import AuthService from "../services/auth-service"
+import AuthService from "../../services/auth-service"
 
 const Header = styled.h3 ``
 const Container = styled.div`
@@ -49,9 +49,8 @@ const Register = () => {
     const [userEmail, setUserEmail] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
    const validateRegisterData = (data) => {
-       console.log( new Function( data.functionName))
-         new Function( data.functionName)(data.event)
-       // d(data.event)
+       this[data.method](data.event)
+
    }
    const confirmPassword = (data) => {
        let userData = {
@@ -85,6 +84,7 @@ const Register = () => {
             setErrorMessage('Something went wrong please check your E-Mail')
         })
     }
+
         return (
       <Container>
           {emailSent ? <div>
@@ -101,7 +101,7 @@ const Register = () => {
                       <InputsContainer onSubmit={handleSubmit}>
                           <div>
                               <div>
-                                  <CustomInput type="text" id="inputName"  placeholder="name"  name="name" value={name} onChange={(e) => setName(e.target.value)} required/>
+                                  <CustomInput type="text" id="inputName"  placeholder="name"  name="name" value={name} onChange={(e) =>validateRegisterData({event: e.target.value, method: 'setName'})} required/>
                               </div>
                           </div>
                           <div >
