@@ -30,8 +30,6 @@ const Login = () => {
     const dispatch = useDispatch()
     //get data from store => useSelector
     const { userData, isLoginSuccess, isLoginFailure } = useSelector((state) => state.auth)
-    console.log('userData', userData)
-    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     let history = useHistory();

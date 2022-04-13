@@ -1,7 +1,10 @@
 import styled  from 'styled-components'
 import {Link, useHistory} from 'react-router-dom';
-import React, {useState}  from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {addAddressRequest, addAddressSuccess, getAddressRequest, getAddressSuccess} from "../../store/address/action";
+import {loginRequest} from "../../store/auth/action";
+import address from "../../store/address/reducer";
 
 const Container = styled.div`
          width: 450px;
@@ -23,12 +26,23 @@ const InputsContainer = styled.div `
 
 const MyPage = () => {
     const dispatch = useDispatch()
-    //get data from store => useSelector
     const { userData } = useSelector((state) => state.auth)
+    const { isAddAddressSuccess,myAddresses } = useSelector((state) => state.address)
+
+
     const [address, setAddress] = useState('');
     const addAddress = () => {
-        // address
+        if (address) {
+
+            dispatch(addAddressRequest({address: address}))
+        }
+        setAddress('')
     }
+    useEffect(() => {
+        if (isAddAddressSuccess){
+            dispatch(getAddressRequest())
+        }
+    },[isAddAddressSuccess])
 
     return (
         <Container>
@@ -45,7 +59,7 @@ const MyPage = () => {
 
 
                         <div>
-                            <button onClick={addAddress()}  type="submit">add address &nbsp;&nbsp;&nbsp;
+                            <button onClick={addAddress}  type="submit">add address &nbsp;&nbsp;&nbsp;
 
                             </button>
                         </div>

@@ -3,17 +3,39 @@ import {handleActions} from 'redux-actions'
 import {
     loginRequest,
     loginSuccess,
-    loginFailure
+    loginFailure,
+
+    checkAuthRequest,
+    checkAuthSuccess,
+    checkAuthFailure
 } from "./action";
 
 const initialState = {
     isLoginSuccess: false,
     isLoginFailure: false,
+    isCheckAuthSuccess: false,
+    isCheckAuthFailure: false,
     userData: {},
     errorMessages: []
 }
 
 const reducer = handleActions({
+    [checkAuthRequest]: (state) => ({
+        ...state,
+        isCheckAuthSuccess: false,
+        isCheckAuthFailure: false,
+        userData: {}
+    }),
+    [checkAuthSuccess]: (state,{ payload} ) => ({
+        ...state,
+        isCheckAuthSuccess: true,
+        userData: payload
+    }),
+    [checkAuthFailure]: (state, { payload }) => ({
+        ...state,
+        isCheckAuthFailure: true,
+        errorMessages: payload
+    }),
     [loginRequest]: (state) => ({
         ...state,
         isLoginSuccess: false,
