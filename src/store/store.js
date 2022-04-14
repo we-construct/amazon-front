@@ -13,14 +13,14 @@ const middleware = [sagaMiddleware, createDebounce()];
 
 // ** Dev Tools
 const composeEnhancers =
-    (process.env.REACT_APP_DEVELOPMENT_MODE !== 'production' &&
-        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
-    compose;
+  (process.env.REACT_APP_DEVELOPMENT_MODE !== 'production' &&
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
+  compose;
 // ** Create store
 const store = createStore(
-    rootReducer,
-    {},
-    composeEnhancers(applyMiddleware(...middleware))
+  rootReducer,
+  {},
+  composeEnhancers(applyMiddleware(...middleware))
 );
 
 sagaMiddleware.run(rootSaga);
