@@ -34,6 +34,7 @@ const Header = () => {
         <>
           {' '}
           <Link onClick={logOut}>Logout</Link>
+          <Link to={'/shop'}>Shop</Link>
         </>
       ) : (
         <>

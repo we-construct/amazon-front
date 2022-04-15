@@ -1,6 +1,7 @@
-import Register from './components/auth/register';
-import Login from './components/auth/login';
-import MyPage from './components/auth/myPage';
+import Register from './components/auth/Register';
+import Login from './components/auth/Login';
+import MyPage from './components/auth/MyPage';
+import Shop from './components/shop/Shop';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import Header from './components/navbars/Header';
@@ -25,6 +26,7 @@ function App() {
               <Route path="/register" component={Register} />
               <Route path="/my-page" component={MyPage} />
               <Route path="/login" component={Login} />
+              <Route path="/shop" component={Shop} />
             </Switch>
           </Router>
         </div>

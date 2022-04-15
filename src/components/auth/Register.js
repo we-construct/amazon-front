@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -23,6 +23,10 @@ const InputsContainer = styled.div`
   flex-direction: column;
   gap: 15px;
 `;
+const RegisterButton = styled.button`
+  background-color: ${(props) => (props.hasError ? 'grey' : 'white')};
+  cursor: ${(props) => (props.hasError ? 'not-allowed' : 'pointer')};
+`;
 const ConfirmationButtonsContainer = styled.div`
   margin-top: 20px;
   display: flex;
@@ -41,15 +45,22 @@ const ConfirmationButtons = styled.button`
 `;
 const Register = () => {
   let history = useHistory();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+  const [anyError, setAnyError] = useState(true);
   const [confirmationData, setConfirmationData] = useState('');
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [userRegisterData, setUserRegisterData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [userRegisterDataHasErrors, setUserRegisterDataHasErrors] = useState({
+    nameError: true,
+    emailError: true,
+    passwordError: true,
+  });
   const confirmPassword = (data) => {
     let userData = {
       id: userId,
@@ -66,11 +77,18 @@ const Register = () => {
       }
     });
   };
+  const validateData = (e) => {
+    setUserRegisterDataHasErrors({
+      ...userRegisterDataHasErrors,
+      [`${e.property}Error`]: !e.event,
+    });
+    setUserRegisterData({ ...userRegisterData, [e.property]: e.event });
+  };
   const handleSubmit = (e) => {
     AuthService.registerUser({
-      name: name,
-      email: email,
-      password: password,
+      name: userRegisterData.name,
+      email: userRegisterData.email,
+      password: userRegisterData.password,
     })
       .then((res) => {
         setConfirmationData(res.data.confirmationCodes);
@@ -82,7 +100,13 @@ const Register = () => {
         setErrorMessage('Something went wrong please check your E-Mail');
       });
   };
-
+  useEffect(() => {
+    setAnyError(
+      userRegisterDataHasErrors.emailError ||
+        userRegisterDataHasErrors.nameError ||
+        userRegisterDataHasErrors.passwordError
+    );
+  }, [userRegisterDataHasErrors]);
   return (
     <Container>
       {emailSent ? (
@@ -115,8 +139,10 @@ const Register = () => {
                     id="inputName"
                     placeholder="name"
                     name="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={userRegisterData.name}
+                    onChange={(e) =>
+                      validateData({ event: e.target.value, property: 'name' })
+                    }
                     required
                   />
                 </div>
@@ -126,9 +152,11 @@ const Register = () => {
                   id="inputEmail"
                   placeholder="Email address"
                   type="text"
-                  value={email}
+                  value={userRegisterData.email}
                   name="email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    validateData({ event: e.target.value, property: 'email' })
+                  }
                   required
                 />
               </div>
@@ -138,18 +166,27 @@ const Register = () => {
                     type="password"
                     id="inputPassword"
                     placeholder="******"
-                    value={password}
+                    value={userRegisterData.password}
                     name="password"
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) =>
+                      validateData({
+                        event: e.target.value,
+                        property: 'password',
+                      })
+                    }
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <button onClick={handleSubmit} type="submit">
+                <RegisterButton
+                  onClick={!anyError ? handleSubmit : undefined}
+                  hasError={anyError}
+                  type="submit"
+                >
                   Register &nbsp;&nbsp;&nbsp;
-                </button>
+                </RegisterButton>
               </div>
             </InputsContainer>
             <div>
