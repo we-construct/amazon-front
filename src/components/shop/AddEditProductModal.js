@@ -3,8 +3,12 @@ import useComponentVisible from '../../utils/clickOutside';
 import { SketchPicker } from 'react-color';
 import { useEffect, useRef, useState } from 'react';
 import {
+  Box,
   Button,
+  Chip,
+  InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
   TextField,
@@ -12,6 +16,7 @@ import {
 const ModalContainer = styled.div`
   width: 60%;
   height: 600px;
+  background: #fafafa;
   border: 1px salmon dotted;
   position: absolute;
   z-index: 4;
@@ -55,20 +60,56 @@ const sizes = [
     label: 'Extra Large',
   },
 ];
-const AddEditProductModal = ({ modalHeader }) => {
+const AddEditProductModal = ({ modalHeader, addData }) => {
   const { ref, isComponentVisible } = useComponentVisible(true);
-  const [productData, setProductData] = useState({ size: sizes[0].value });
+  const [productData, setProductData] = useState({
+    sizes: [],
+    images: [],
+    color: '',
+  });
   const [productDataColors, setProductDataColors] = useState([]);
-  const [productDataImages, setProductDataImages] = useState({});
+  const [productDataSizes, setProductDataSizes] = useState([]);
+  const [productDataImages, setProductDataImages] = useState([]);
+  const [productImages, setProductImages] = useState([]);
   const [color, setColor] = useState('');
-  const handleChange = (e) => {
-    setProductData({ ...productData, size: e.target.value });
+  const onImageChange = (e) => {
+    let files = e.target.files || e.dataTransfer.files;
+
+    if (!files.length) {
+      return;
+    }
+    setProductImages([...productImages, ...files]);
+    createImage(files[0]);
+  };
+  const addToCollection = () => {
+    addData({
+      ...productData,
+      color,
+      sizes: [...productDataSizes],
+      images: [...productImages],
+    });
+  };
+
+  const createImage = (file) => {
+    let reader = new FileReader();
+    reader.onload = (e) => {
+      setProductDataImages([...productDataImages, e.target.result]);
+    };
+    reader.readAsDataURL(file);
+  };
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setProductDataSizes(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value
+    );
   };
   const handleKey = (e) => {
     if (e.code === 'Enter' || e.code === 'Comma') {
       setProductDataColors([...productDataColors, color]);
       setColor('');
-      console.log(productDataColors);
     }
   };
   return (
@@ -76,15 +117,6 @@ const AddEditProductModal = ({ modalHeader }) => {
       {' '}
       {modalHeader}
       <Container>
-        <div>
-          Product colors
-          <InfoContainer>
-            {productDataColors.map((item) => (
-              <ColorWrapper color={item}>{item}</ColorWrapper>
-            ))}
-          </InfoContainer>
-        </div>
-
         <InfoContainer>
           <TextField
             value={productData.name}
@@ -118,10 +150,21 @@ const AddEditProductModal = ({ modalHeader }) => {
               setProductData({ ...productData, price: e.target.value })
             }
           />
+          <InputLabel id="demo-multiple-chip-label">Chip</InputLabel>
           <Select
-            value={productData.size}
-            label="Size"
-            onChange={(e) => handleChange(e)}
+            labelId="demo-multiple-chip-label"
+            id="demo-multiple-chip"
+            multiple
+            value={productDataSizes}
+            onChange={handleChange}
+            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {productDataSizes.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
           >
             {sizes.map((option) => (
               <MenuItem value={option.value}>{option.label}</MenuItem>
@@ -143,16 +186,25 @@ const AddEditProductModal = ({ modalHeader }) => {
             onChange={(e) => {
               setColor(e.target.value);
             }}
-            onKeyUp={(e) => {
-              handleKey(e);
-            }}
           />
           <Button variant="contained" component="label">
             Upload File
-            <input type="file" hidden />
+            <input type="file" hidden onChange={onImageChange} />
           </Button>
         </InfoContainer>
-        <InfoContainer>Please choose main image</InfoContainer>
+        <InfoContainer>
+          Please choose main image
+          {productDataImages.map((image) => (
+            <img src={image} alt="" />
+          ))}
+          <Button
+            onClick={addToCollection}
+            variant="contained"
+            component="label"
+          >
+            add to collection
+          </Button>
+        </InfoContainer>
       </Container>
     </ModalContainer>
   );
