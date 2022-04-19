@@ -4,11 +4,23 @@ import {
   addProductSuccess,
   addProductFailure,
   addProductRequest,
+  getProductsRequest,
+  getProductsSuccess,
+  getProductsFailure,
+  getProductRequest,
+  getProductSuccess,
+  getProductFailure,
 } from './action';
 
 const initialState = {
   isAddProductSuccess: false,
   isAddProductFailure: false,
+  isGetProductsSuccess: false,
+  isGetProductsFailure: false,
+  isGetProductSuccess: false,
+  isGetProductFailure: false,
+  myProducts: [],
+  product: [],
   errorMessages: [],
 };
 
@@ -18,7 +30,6 @@ const reducer = handleActions(
       ...state,
       isAddProductSuccess: false,
       isAddProductFailure: false,
-      userData: {},
     }),
     [addProductSuccess]: (state, { payload }) => ({
       ...state,
@@ -27,6 +38,39 @@ const reducer = handleActions(
     [addProductFailure]: (state, { payload }) => ({
       ...state,
       isAddProductFailure: true,
+      errorMessages: payload,
+    }),
+    [getProductsRequest]: (state) => ({
+      ...state,
+      isGetProductsSuccess: false,
+      isGetProductsFailure: false,
+    }),
+    [getProductsSuccess]: (state, { payload }) => ({
+      ...state,
+      isGetProductsSuccess: true,
+      myProducts: payload,
+    }),
+    [getProductsFailure]: (state, { payload }) => ({
+      ...state,
+      isGetProductsFailure: true,
+      isGetProductsSuccess: false,
+      errorMessages: payload,
+    }),
+    [getProductRequest]: (state) => ({
+      ...state,
+      isGetProductSuccess: false,
+      isGetProductFailure: false,
+    }),
+    [getProductSuccess]: (state, { payload }) => ({
+      ...state,
+      isGetProductSuccess: true,
+      isGetProductFailure: false,
+      product: payload,
+    }),
+    [getProductFailure]: (state, { payload }) => ({
+      ...state,
+      isGetProductFailure: true,
+      isGetProductSuccess: false,
       errorMessages: payload,
     }),
   },
